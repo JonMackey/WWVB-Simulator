@@ -88,6 +88,9 @@ void UnixTimeWWVB::InitWWVB(
 
 	WakeUpGPSModule();
 
+	/*
+	*	Start calling both TIM2 & TIM3 interrupt callbacks.
+	*/
 	HAL_TIM_Base_Start_IT(sTim2Hndl);
 	HAL_TIM_PWM_Start(inTim3Hndl, TIM_CHANNEL_1);
  }
@@ -110,12 +113,13 @@ void UInt32ToHexStr(
 
 /****************************** WakeUpGPSModule *******************************/
 /*
-*	Wakes up the GPS module by connecting the module's GND pin to GND via a
-*	MOSFET controlled by PB10.
+*	Wakes up the GPS module by applying power via a MOSFET controlled by PB10.
 */
 void UnixTimeWWVB::WakeUpGPSModule(void)
 {
-	// Apply power to the GPS module
+	/*
+	*	Apply power to the GPS module
+	*/
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_SET);
 	
 	/*
@@ -132,12 +136,15 @@ void UnixTimeWWVB::WakeUpGPSModule(void)
 
 /**************************** PutGPSModuleToSleep *****************************/
 /*
-*	- Puts the GPS module to sleep by disconnecting the module's GND via a
+*	- Puts the GPS module to sleep by disconnecting the module's power via a
 *	MOSFET controlled by PB10.
 *	- Calculates the next wakup of the GPS to update the time
 */
 void UnixTimeWWVB::PutGPSModuleToSleep(void)
 {
+	/*
+	*	Remove power from the GPS module
+	*/
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
 	{
 		time32_t	time = Time();

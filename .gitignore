@@ -1,7 +1,8 @@
 .metadata
 .settings
-# [Rr]elease
+[Rr]elease
 [Dd]ebug
 [Dd]rivers
 [Ss]tartup
-.launch
+*.launch
+*.ld

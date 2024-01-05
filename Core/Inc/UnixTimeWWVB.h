@@ -92,7 +92,7 @@ public:
 								time32_t				inTime,
 								SWWVBTimeCode&			outTCS);
 	enum eDST
-	{						// 57	58
+	{					// Bit: 57	58
 		eDST_NotInEffect,	//  0	 0
 		eDST_EndsToday,		//	0	 1
 		eDST_BeginsToday,	//	1	 0
@@ -100,8 +100,8 @@ public:
 	};
 	enum eDUT
 	{
-		eDUT_Negative = 2,
-		eDUT_Positive = 5
+		eDUT_Negative = 2,	// Bit 37
+		eDUT_Positive = 5	// Bits 36 & 38
 	};
 	
 #ifdef STM32_CUBE_
