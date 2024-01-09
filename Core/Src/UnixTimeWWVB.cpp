@@ -163,6 +163,7 @@ void UnixTimeWWVB::PutGPSModuleToSleep(void)
 }
 #endif
 
+#define CHECK_RMC_STATUS 0
 /**************************** UnixTimeFromRMCString ***************************/
 //$GNRMC,192503.00,A,4420.87057,N,07111.35174,W,0.049,,231223,,,A,V*09\r\n
 uint32_t UnixTimeWWVB::UnixTimeFromRMCString(
@@ -191,6 +192,9 @@ uint32_t UnixTimeWWVB::UnixTimeFromRMCString(
 		uint8_t		crc = 0;
 		uint8_t		expectedCRC = 0;
 		bool		crcAsteriskHit = false;
+#if CHECK_RMC_STATUS
+		bool		dataValid = false;
+#endif
 		while ((thisChar = *(stringPtr++)) != 0)
 		{
 			switch (thisChar)
@@ -234,6 +238,11 @@ uint32_t UnixTimeWWVB::UnixTimeFromRMCString(
 									timeSubfieldIndex++;
 								} // else fractional second subfield is ignored
 								break;
+#if CHECK_RMC_STATUS
+							case 2:	// Status, V = warning, A = Valid
+								dataValid = thisChar == 'A';
+								break;
+#endif
 							case 9:	// Date field of the form ddmmyy
 								if (dateSubfieldIndex < 6)
 								{
@@ -296,8 +305,14 @@ uint32_t UnixTimeWWVB::UnixTimeFromRMCString(
 					break;
 			}
 		}
+#if CHECK_RMC_STATUS
+		if (crcAsteriskHit &&
+			crc == expectedCRC &&
+			dataValid)
+#else
 		if (crcAsteriskHit &&
 			crc == expectedCRC)
+#endif
 		{
 			if (unixTime)
 			{
